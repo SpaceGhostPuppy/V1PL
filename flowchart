@@ -1,0 +1,34 @@
+flowchart TB
+    subgraph Frontend["Frontend Layer"]
+        UI[Web Dashboard]
+        API_Gate[API Gateway/Access Control]
+    end
+
+    subgraph Core["Core Scanner Engine"]
+        Orchestrator[Scan Orchestrator]
+        Queue[Job Queue]
+        Results[Results Processor]
+        
+        subgraph Scanners["Scanner Modules"]
+            WebScanner[Web Application Scanner]
+            NetScanner[Network Scanner]
+            direction TB
+            WebScanner --> |Feeds results| Results
+            NetScanner --> |Feeds results| Results
+        end
+    end
+
+    subgraph Storage["Data Layer"]
+        DB[(Primary Database)]
+        Cache[(Redis Cache)]
+        Reports[Report Storage]
+    end
+
+    UI --> API_Gate
+    API_Gate --> Orchestrator
+    Orchestrator --> Queue
+    Queue --> WebScanner
+    Queue --> NetScanner
+    Results --> DB
+    Results --> Reports
+    DB --> Cache
